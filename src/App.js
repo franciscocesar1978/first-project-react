@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
 import axios from 'axios';
 
@@ -22,6 +22,16 @@ function App() {
   const inputName = useRef();
   const inputAge = useRef();
 
+  useEffect(() => {
+
+    async function fetchUsers() {
+      const { data: newUsers } = await axios.get("http://localhost:3001/users");
+      setUsers(newUsers);
+    }
+
+    fetchUsers()
+  }, [users])
+
   //REACT HOOKS  => FERRAMENTAS AUXILIARES
 
   async function addNewUser() {
@@ -33,7 +43,10 @@ function App() {
     setUsers([...users, newUser]);
   }
 
-  function deleteUser(userId) {
+ 
+
+  async function deleteUser(userId) {
+    await axios.delete(`http://localhost:3001/users/${userId}`)
     const newUsers = users.filter((user) => user.id !== userId);
 
     setUsers(newUsers);
@@ -57,8 +70,9 @@ function App() {
 
         <ul>
           {users.map((user) => (
-            <User key={user.id}>
-              <p>{user.name}</p> <p>{user.age}</p>
+            <User Key={user.id}>
+              <p>{user.name}</p>
+               <p>{user.age}</p>
               <button onClick={() => deleteUser(user.id)}>
                 <img src={Trash} alt="lata-de-lixo" />
               </button>
